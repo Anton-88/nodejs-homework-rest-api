@@ -1,24 +1,44 @@
-const express = require('express')
-const router = express.Router()
+import model from '../../model/index'
+import { validatePost, validateUpdate } from './validation'
+import { Router } from 'express'
+const router = new Router()
 
 router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  const contacts = await model.listContacts()
+  res.status(200).json(contacts)
 })
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
+router.get('/:id', async (req, res, next) => {
+  const { id } = req.params
+  const contact = await model.getContactById(id)
+  console.log(contact)
+  if (contact) {
+    return res.status(200).json(contact)
+  }
+  res.status(404).json({ message: 'User not found' })
 })
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+router.post('/', validatePost, async (req, res, next) => {
+  const newContact = await model.addContact(req.body)
+  res.status(201).json(newContact)
 })
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
+router.delete('/:id', async (req, res, next) => {
+  const { id } = req.params
+  const contact = await model.removeContact(id)
+  if (contact) {
+    return res.status(200).json({ message: 'contact successfully deleted' })
+  }
+  res.status(404).json({ message: 'User not found' })
 })
 
-router.patch('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
+router.patch('/:id', validateUpdate, async (req, res, next) => {
+  const { id } = req.params
+  const contact = await model.updateContact(id, req.body)
+  if (contact) {
+    return res.status(200).json(contact)
+  }
+  res.status(404).json({ message: 'User not found' })
 })
 
-module.exports = router
+export default router
