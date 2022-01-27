@@ -2,7 +2,6 @@ import express from 'express';
 import logger from 'morgan';
 import cors from 'cors';
 import { HttpCode } from './lib/constants';
-
 import contactsRouter from './routes/api/contacts';
 
 const app = express();

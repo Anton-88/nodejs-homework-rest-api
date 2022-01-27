@@ -6,7 +6,6 @@ import {
   removeContact,
   updateContact,
 } from '../../controllers/contacts/index.js';
-
 import {
   validateCreate,
   validateUpdate,
@@ -33,4 +32,4 @@ router.patch(
   updateContact,
 );
 
-export default router
+export default router;
