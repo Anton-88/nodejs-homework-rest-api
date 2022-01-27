@@ -1,44 +1,35 @@
-import model from '../../model/index'
-import { validatePost, validateUpdate } from './validation'
-import { Router } from 'express'
-const router = new Router()
+import { Router } from 'express';
+import {
+  getContacts,
+  getContactById,
+  addContact,
+  removeContact,
+  updateContact,
+} from '../../controllers/contacts/index.js';
+import {
+  validateCreate,
+  validateUpdate,
+  validateId,
+  validateUpdateFavorite,
+} from './validation';
 
-router.get('/', async (req, res, next) => {
-  const contacts = await model.listContacts()
-  res.status(200).json(contacts)
-})
+const router = new Router();
 
-router.get('/:id', async (req, res, next) => {
-  const { id } = req.params
-  const contact = await model.getContactById(id)
-  console.log(contact)
-  if (contact) {
-    return res.status(200).json(contact)
-  }
-  res.status(404).json({ message: 'User not found' })
-})
+router.get('/', getContacts);
 
-router.post('/', validatePost, async (req, res, next) => {
-  const newContact = await model.addContact(req.body)
-  res.status(201).json(newContact)
-})
+router.get('/:id', validateId, getContactById);
 
-router.delete('/:id', async (req, res, next) => {
-  const { id } = req.params
-  const contact = await model.removeContact(id)
-  if (contact) {
-    return res.status(200).json({ message: 'contact successfully deleted' })
-  }
-  res.status(404).json({ message: 'User not found' })
-})
+router.post('/', validateCreate, addContact);
 
-router.patch('/:id', validateUpdate, async (req, res, next) => {
-  const { id } = req.params
-  const contact = await model.updateContact(id, req.body)
-  if (contact) {
-    return res.status(200).json(contact)
-  }
-  res.status(404).json({ message: 'User not found' })
-})
+router.delete('/:id', validateId, removeContact);
 
-export default router
+router.put('/:id', validateId, validateUpdate, updateContact);
+
+router.patch(
+  '/:id/favorite',
+  validateId,
+  validateUpdateFavorite,
+  updateContact,
+);
+
+export default router;
